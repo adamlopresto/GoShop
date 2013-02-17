@@ -1,6 +1,5 @@
 package fake.domain.adamlopresto.goshop;
 
-import fake.domain.adamlopresto.goshop.tables.ItemsTable;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +7,8 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
+import fake.domain.adamlopresto.goshop.contentprovider.GoShopContentProvider;
+import fake.domain.adamlopresto.goshop.tables.ItemsTable;
 
 public class SMSReceiver extends BroadcastReceiver {
 
@@ -52,6 +53,9 @@ public class SMSReceiver extends BroadcastReceiver {
 	    db.setTransactionSuccessful();
 	    db.endTransaction();
 	    db.close();
+	    
+	    context.getContentResolver().notifyChange(GoShopContentProvider.ITEM_URI, null);
+		context.getContentResolver().notifyChange(GoShopContentProvider.ITEM_AISLE_URI, null);
 	    
 	    Toast.makeText(context, "Updated list. Marked "+items.length+" items needed.", Toast.LENGTH_LONG).show();
 	}

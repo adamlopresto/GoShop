@@ -1,2 +1,3 @@
 Create, delete, rename stores
-If window is open on SMS receive, update display (notify the ContentResolver of the approrpriate changes behind its back.)
+Deal properly with "Misc" item; sending notes for everything is sloppy.
+Work out some way to send back and forth checked off items; maybe status="P" gets sent with a check-mark or something.
