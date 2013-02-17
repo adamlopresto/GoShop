@@ -11,6 +11,7 @@ public class SettingsFragment extends PreferenceFragment {
 	public static final String PREF_SHOW_ALL = "pref_show_all";
 	public static final String PREF_LIST = "pref_list";
 	public static final String PREF_STORE = "pref_store";
+	public static final String PREF_SMS_RECIPIENT = "pref_sms_recipient";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -22,6 +22,8 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.telephony.PhoneNumberUtils;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -211,9 +213,43 @@ public class MainListActivity extends ListActivity
 		case R.id.menu_show_all:
 			prefs.edit().putBoolean(SettingsFragment.PREF_SHOW_ALL, !showAll).apply();
 			return true;
+		/*
 		case R.id.menu_import:
 			startActivity(new Intent(this, ImportActivity.class));
 			return true;
+		*/
+		case R.id.menu_send:
+		{
+			String destination = prefs.getString(SettingsFragment.PREF_SMS_RECIPIENT, "");
+			if (!PhoneNumberUtils.isWellFormedSmsAddress(destination)){
+				new AlertDialog.Builder(this).setTitle("Bad phone number")
+				.setMessage("The phone number "+destination+" doesn't seem to be a valid number to send sms to.")
+				.setPositiveButton("OK", null)
+				.show();
+				return true;
+			}
+			
+			StringBuffer sb = new StringBuffer("GoShop:");
+			Cursor c = adapter.getCursor();
+			int pos = c.getPosition();
+			int col = c.getColumnIndexOrThrow(ItemsTable.COLUMN_NAME);
+			int stat = c.getColumnIndexOrThrow(ItemsTable.COLUMN_STATUS);
+			c.moveToFirst();
+			while (!c.isAfterLast()){
+				if ("N".equals(c.getString(stat))){
+					sb.append("\n");
+					sb.append(c.getString(col));
+				}
+				c.moveToNext();
+			}
+			c.moveToPosition(pos);
+			//Log.e("GoShop", sb.toString());
+			
+			SmsManager sms = SmsManager.getDefault();
+			sms.sendMultipartTextMessage(destination, null, sms.divideMessage(sb.toString()), null, null);
+			return true;
+			
+		}
 		case R.id.menu_checkout:
 			new AlertDialog.Builder(this)
 		    .setTitle("Checkout")
@@ -232,6 +268,7 @@ public class MainListActivity extends ListActivity
 		        }
 		     })
 		     .show();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
