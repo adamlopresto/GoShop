@@ -3,7 +3,7 @@
     <item
         android:id="@+id/menu_send"
         android:icon="@android:drawable/ic_menu_share"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
         android:title="@string/menu_send"/>
     <item
         android:id="@+id/menu_create"

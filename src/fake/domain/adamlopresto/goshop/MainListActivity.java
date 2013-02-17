@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
-import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -245,8 +244,16 @@ public class MainListActivity extends ListActivity
 			c.moveToPosition(pos);
 			//Log.e("GoShop", sb.toString());
 			
+			/*
 			SmsManager sms = SmsManager.getDefault();
 			sms.sendMultipartTextMessage(destination, null, sms.divideMessage(sb.toString()), null, null);
+			*/
+			
+			Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+			sendIntent.setData(Uri.parse("sms:"+destination));  
+			sendIntent.putExtra("sms_body", sb.toString());
+			startActivity(sendIntent);
+			
 			return true;
 			
 		}

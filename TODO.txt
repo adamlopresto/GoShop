@@ -1,0 +1,2 @@
+Create, delete, rename stores
+If window is open on SMS receive, update display (notify the ContentResolver of the approrpriate changes behind its back.)

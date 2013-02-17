@@ -9,8 +9,8 @@
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <application
         android:allowBackup="true"
@@ -23,8 +23,9 @@
 
         <activity
             android:name="fake.domain.adamlopresto.goshop.MainListActivity"
+            android:configChanges="keyboardHidden|orientation"
             android:label="@string/title_activity_main_list"
-            android:launchMode="singleTop" android:configChanges="keyboardHidden|orientation">
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,35 +48,41 @@
 
         <activity
             android:name="fake.domain.adamlopresto.goshop.ItemDetailActivity"
-            android:windowSoftInputMode="stateHidden" 
-            android:label="@string/title_activity_item_edit" 
-            android:configChanges="keyboardHidden|orientation">
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_item_edit"
+            android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity android:name="fake.domain.adamlopresto.goshop.SettingsActivity" />
         <activity
             android:name="fake.domain.adamlopresto.goshop.ImportActivity"
-            android:label="@string/title_activity_import" 
-            android:configChanges="keyboardHidden|orientation">
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_import" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fake.domain.adamlopresto.goshop.MainListActivity" />
         </activity>
         <activity
             android:name="fake.domain.adamlopresto.goshop.StoreAisleSelection"
-            android:label="@string/title_activity_store_aisle_selection" 
-            android:configChanges="keyboardHidden|orientation">
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_store_aisle_selection" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fake.domain.adamlopresto.goshop.ItemDetailActivity" />
         </activity>
         <activity
             android:name="fake.domain.adamlopresto.goshop.AisleEditActivity"
-            android:label="@string/title_activity_aisle_edit"
-            android:configChanges="keyboardHidden|orientation" >
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_aisle_edit" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fake.domain.adamlopresto.goshop.StoreAisleSelection" />
         </activity>
+
+        <receiver android:name=".SMSReceiver" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
