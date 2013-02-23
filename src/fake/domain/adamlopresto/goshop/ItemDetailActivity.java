@@ -191,10 +191,17 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 		}
 	}
 
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		//saveState();
 		outState.putParcelable(GoShopContentProvider.CONTENT_ITEM_TYPE, uri);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle state) {
+		super.onRestoreInstanceState(state);
+		uri = state.getParcelable(GoShopContentProvider.CONTENT_ITEM_TYPE);
 	}
 
 	@Override
