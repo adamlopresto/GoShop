@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -331,7 +332,8 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, DELETE_ID, 0, R.string.menu_delete);
+		if (((AdapterView.AdapterContextMenuInfo)menuInfo).position != 0)
+			menu.add(0, DELETE_ID, 0, R.string.menu_delete);
 	}
 	
 	@Override
