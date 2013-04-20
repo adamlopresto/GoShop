@@ -53,5 +53,7 @@
     <string name="pref_sms_recipient">pref_sms_recipient</string>
     <string name="pref_sms_recipient_title">Default SMS Recipient</string>
     <string name="menu_send">Send</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 
 </resources>

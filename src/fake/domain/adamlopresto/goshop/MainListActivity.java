@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -25,12 +26,15 @@ import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -47,6 +51,108 @@ public class MainListActivity extends ListActivity
 		SearchView.OnQueryTextListener, OnActionExpandListener, OnNavigationListener
 {
 
+	private AbsListView.MultiChoiceModeListener mActionModeCallback = new AbsListView.MultiChoiceModeListener() {
+		private MenuItem editItem;
+	
+		@Override
+		public void onItemCheckedStateChanged(ActionMode mode, int position,
+				long id, boolean checked) {
+			final int checkedCount = getListView().getCheckedItemCount();
+            switch (checkedCount) {
+                case 0:
+                    //mode.setSubtitle(null);
+                    break;
+                case 1:
+                    //mode.setSubtitle("One item selected");
+                    editItem.setVisible(true);
+                    break;
+                default:
+                	editItem.setVisible(false);
+                    //mode.setSubtitle("" + checkedCount + " items selected");
+                    break;
+            }
+		}
+			
+	    // Called when the action mode is created; startActionMode() was called
+	    @Override
+	    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+	        // Inflate a menu resource providing context menu items
+	        MenuInflater inflater = mode.getMenuInflater();
+	        inflater.inflate(R.menu.context_edit_delete, menu);
+	        editItem = menu.findItem(R.id.edit);
+	        mode.setTitle("Tasks");
+	        return true;
+	    }
+
+	    // Called each time the action mode is shown. Always called after onCreateActionMode, but
+	    // may be called multiple times if the mode is invalidated.
+	    @Override
+	    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+	        return false; // Return false if nothing is done
+	    }
+
+	    // Called when the user selects a contextual menu item
+	    @Override
+	    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+	        switch (item.getItemId()) {
+	            case R.id.edit:{
+	            	long tempId = getListView().getCheckedItemIds()[0];
+	            	if (oneStore){
+	            		Cursor c = getContentResolver().query(Uri.parse(GoShopContentProvider.ITEM_AISLE_URI+"/"+tempId), new String[]{ItemAisleDetailView.COLUMN_ITEM}, null, null, null);
+	            		c.moveToFirst();
+	            		tempId = c.getLong(0);
+	            		c.close();
+	            	}
+	            	final long id = tempId;
+	                mode.finish(); // Action picked, so close the CAB
+	                Intent i = new Intent(MainListActivity.this, ItemDetailActivity.class);
+	                Uri uri = Uri.parse(GoShopContentProvider.ITEM_URI + "/"+ id);
+	                i.putExtra(GoShopContentProvider.CONTENT_ITEM_TYPE, uri);
+	                startActivity(i);
+	                return true;
+
+	            }
+	            case R.id.delete:{
+	            	Uri tmpUri;
+	            	if (oneStore)
+	            		tmpUri = GoShopContentProvider.ITEM_AISLE_URI;
+	            	else 
+	            		tmpUri = GoShopContentProvider.ITEM_URI;
+	            	final Uri uri = tmpUri;
+	            	final long[] ids = getListView().getCheckedItemIds();
+	            	new AlertDialog.Builder(MainListActivity.this)
+	            	.setMessage("Delete these items?")
+	            	.setNegativeButton(android.R.string.cancel, null)
+	            	.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							ContentResolver res = getContentResolver();
+							String where = ItemsTable.COLUMN_ID + "=?";
+							String[] idArray = new String[1];
+							
+							for (long id : ids){
+								idArray[0] = String.valueOf(id);
+								res.delete(uri, where, idArray);
+							}
+							getLoaderManager().restartLoader(0, null, MainListActivity.this);
+						}
+	            		
+	            	}).show();
+	            	
+	                mode.finish(); // Action picked, so close the CAB
+	                return true;
+	            }
+	            default:
+	                return false;
+	        }
+	    }
+
+	    // Called when the user exits the action mode
+	    @Override
+	    public void onDestroyActionMode(ActionMode mode) {
+	    }
+	};
+	
 
 	private static final int EDIT_ID = Menu.FIRST + 1;
 	private static final int DELETE_ID = EDIT_ID + 1;
@@ -69,6 +175,9 @@ public class MainListActivity extends ListActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_list);
 
+		getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+		getListView().setMultiChoiceModeListener(mActionModeCallback);
+		
 		//getListView().setDividerHeight(2);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		prefs.registerOnSharedPreferenceChangeListener(this);
@@ -91,7 +200,7 @@ public class MainListActivity extends ListActivity
 		createAdapter();
 		handleIntent(getIntent());
 
-		registerForContextMenu(getListView());
+		//registerForContextMenu(getListView());
 		
 		getLoaderManager().restartLoader(STORE_LOADER, null, this);
 	}
