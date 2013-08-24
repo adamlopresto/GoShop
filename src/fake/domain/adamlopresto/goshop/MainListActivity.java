@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -78,9 +79,9 @@ public class MainListActivity extends ListActivity
 	    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 	        // Inflate a menu resource providing context menu items
 	        MenuInflater inflater = mode.getMenuInflater();
-	        inflater.inflate(R.menu.context_edit_delete, menu);
+	        inflater.inflate(R.menu.context_edit_share_delete, menu);
 	        editItem = menu.findItem(R.id.edit);
-	        mode.setTitle("Tasks");
+	        //mode.setTitle("Tasks");
 	        return true;
 	    }
 
@@ -111,6 +112,20 @@ public class MainListActivity extends ListActivity
 	                startActivity(i);
 	                return true;
 
+	            }
+	            case R.id.send:{
+	            	ListView lv = getListView();
+	            	SparseBooleanArray checked = lv.getCheckedItemPositions();
+	            	Cursor c = adapter.getCursor();
+	            	StringBuffer sb = new StringBuffer("GoShop:");
+	            	for (int i = 0 ; i < checked.size() ; i++){
+	            		int pos = checked.keyAt(i);
+	            		c.moveToPosition(pos);
+	            		sb.append('\n');
+	            		sb.append(c.getString(c.getColumnIndex("item_name")));
+	            	}
+	            	sendSMS(sb.toString());
+	            	return true;
 	            }
 	            case R.id.delete:{
 	            	Uri tmpUri;
@@ -328,14 +343,6 @@ public class MainListActivity extends ListActivity
 		*/
 		case R.id.menu_send:
 		{
-			String destination = prefs.getString(SettingsFragment.PREF_SMS_RECIPIENT, "");
-			if (!PhoneNumberUtils.isWellFormedSmsAddress(destination)){
-				new AlertDialog.Builder(this).setTitle("Bad phone number")
-				.setMessage("The phone number "+destination+" doesn't seem to be a valid number to send sms to.")
-				.setPositiveButton("OK", null)
-				.show();
-				return true;
-			}
 			
 			StringBuffer sb = new StringBuffer("GoShop:");
 			Cursor c = adapter.getCursor();
@@ -351,17 +358,8 @@ public class MainListActivity extends ListActivity
 				c.moveToNext();
 			}
 			c.moveToPosition(pos);
-			//Log.e("GoShop", sb.toString());
 			
-			/*
-			SmsManager sms = SmsManager.getDefault();
-			sms.sendMultipartTextMessage(destination, null, sms.divideMessage(sb.toString()), null, null);
-			*/
-			
-			Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-			sendIntent.setData(Uri.parse("sms:"+destination));  
-			sendIntent.putExtra("sms_body", sb.toString());
-			startActivity(sendIntent);
+			sendSMS(sb.toString());
 			
 			return true;
 			
@@ -602,5 +600,26 @@ public class MainListActivity extends ListActivity
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		prefs.edit().putString(SettingsFragment.PREF_STORE, String.valueOf(itemId)).apply();
 		return true;
+	}
+	
+	private void sendSMS(String body){
+		String destination = prefs.getString(
+				SettingsFragment.PREF_SMS_RECIPIENT, "");
+		if (!PhoneNumberUtils.isWellFormedSmsAddress(destination)) {
+			new AlertDialog.Builder(this)
+					.setTitle("Bad phone number")
+					.setMessage(
+							"The phone number "
+									+ destination
+									+ " doesn't seem to be a valid number to send sms to.")
+					.setPositiveButton("OK", null).show();
+			return;
+		}
+
+
+		Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+		sendIntent.setData(Uri.parse("sms:" + destination));
+		sendIntent.putExtra("sms_body", body);
+		startActivity(sendIntent);
 	}
 }
