@@ -1,4 +1,0 @@
-Add "Send" to CAB
-Create, delete, rename stores
-Deal properly with "Misc" item; sending notes for everything is sloppy.
-Work out some way to send back and forth checked off items; maybe status="P" gets sent with a check-mark or something.
