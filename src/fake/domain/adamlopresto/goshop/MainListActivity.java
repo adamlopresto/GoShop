@@ -28,15 +28,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
@@ -169,8 +166,8 @@ public class MainListActivity extends ListActivity
 	};
 	
 
-	private static final int EDIT_ID = Menu.FIRST + 1;
-	private static final int DELETE_ID = EDIT_ID + 1;
+	//private static final int EDIT_ID = Menu.FIRST + 1;
+	//private static final int DELETE_ID = EDIT_ID + 1;
 	private SharedPreferences prefs;
 	
 	private boolean showAll;
@@ -184,6 +181,8 @@ public class MainListActivity extends ListActivity
 	
 	private static final int ITEM_LOADER = 0;
 	private static final int STORE_LOADER = 1;
+	
+	private MenuItem newMenuItem;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -307,7 +306,10 @@ public class MainListActivity extends ListActivity
 	    SearchView searchView = (SearchView)menuItem.getActionView();
 	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 	    searchView.setOnQueryTextListener(this);
-
+	    
+	    newMenuItem = menu.findItem(R.id.menu_create);
+	    newMenuItem.setVisible(false);
+	    
 		return true;
 	}
 	
@@ -319,6 +321,7 @@ public class MainListActivity extends ListActivity
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu){
+		Log.e("GoShop", "onPrepareOptionsMenu");
 		menu.findItem(R.id.menu_show_all).setChecked(showAll);
 		return true;
 	}
@@ -397,6 +400,7 @@ public class MainListActivity extends ListActivity
 		startActivity(i);
 	}
 
+	/*
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -433,9 +437,11 @@ public class MainListActivity extends ListActivity
 		}
 		return super.onContextItemSelected(item);
 	}
+	*/
 
 	//@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		Log.e("GoShop", "onCreateLoader");
 		if (id == ITEM_LOADER){
 			Uri uri;
 			String[] projection;
@@ -492,6 +498,7 @@ public class MainListActivity extends ListActivity
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		Log.e("GoShop", "onLoadFinished");
 		switch (loader.getId()){
 		case ITEM_LOADER:
 			findViewById(R.id.progress).setVisibility(View.GONE);
@@ -513,6 +520,7 @@ public class MainListActivity extends ListActivity
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
+		Log.e("GoShop", "onLoaderReset");
 		switch (loader.getId()){
 		case ITEM_LOADER:
 			adapter.swapCursor(null);
@@ -580,11 +588,14 @@ public class MainListActivity extends ListActivity
 
 	@Override
 	public boolean onQueryTextSubmit(String arg0) {
+		Log.e("GoShop", "onQueryTextSubmit");
 		return false;
 	}
 
 	@Override
 	public boolean onMenuItemActionCollapse(MenuItem arg0) {
+		Log.e("GoShop", "onMenuItemActionCollapse");
+		newMenuItem.setVisible(false);
 		query = null;
 		createAdapter();
 		resetLoader();
@@ -593,6 +604,8 @@ public class MainListActivity extends ListActivity
 
 	@Override
 	public boolean onMenuItemActionExpand(MenuItem arg0) {
+		Log.e("GoShop", "onMenuItemActionExpand");
+		newMenuItem.setVisible(true);
 		return true;
 	}
 
