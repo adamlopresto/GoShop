@@ -44,7 +44,7 @@
     <string name="title_activity_store_aisle_selection">Store and Aisle</string>
     <string name="add_aisle">Add Aisle</string>
     <string name="default_units">each</string>
-    <string name="new_store">New Store</string>
+    <string name="new_store">New store</string>
     <string name="title_activity_item_edit">Edit Item</string>
     <string name="menu_cancel">Cancel</string>
     <string name="title_activity_aisle_edit">Edit Aisle</string>
@@ -55,5 +55,12 @@
     <string name="menu_send">Send</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="delete_store">Delete this store</string>
+    <string name="store_name">Store name</string>
+    <string name="create">Create</string>
+    <string name="delete_store_prompt">Are you sure you wish to delete this store? This will delete all aisles associated with it, and cannot be undone.</string>
+    <string name="unfiled">Unfiled</string>
+    <string name="rename_store">Rename this store</string>
+    <string name="rename">Rename</string>
 
 </resources>

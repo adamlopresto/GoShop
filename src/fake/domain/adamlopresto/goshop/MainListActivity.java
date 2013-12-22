@@ -315,13 +315,11 @@ public class MainListActivity extends ListActivity
 	
 	@Override
 	public boolean onSearchRequested(){
-		Log.e("GoShop", "Search requested");
 		return super.onSearchRequested();
 	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu){
-		Log.e("GoShop", "onPrepareOptionsMenu");
 		menu.findItem(R.id.menu_show_all).setChecked(showAll);
 		return true;
 	}
@@ -441,7 +439,6 @@ public class MainListActivity extends ListActivity
 
 	//@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.e("GoShop", "onCreateLoader");
 		if (id == ITEM_LOADER){
 			Uri uri;
 			String[] projection;

@@ -9,7 +9,6 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.TextUtils;
 import fake.domain.adamlopresto.goshop.DatabaseHelper;
 import fake.domain.adamlopresto.goshop.tables.AislesTable;
 import fake.domain.adamlopresto.goshop.tables.ItemAisleDetailView;
@@ -22,15 +21,16 @@ public class GoShopContentProvider extends ContentProvider {
 	private DatabaseHelper helper;
 
 	// Used for the UriMatcher
-	private static final int ITEMS = 1;
-	private static final int ITEM_ID = 2;
-	private static final int ITEM_AISLE = 3;
-	private static final int ITEM_AISLE_ID = 4;
-	private static final int STORE = 5;
-	private static final int STORE_ID = 6;
-	private static final int AISLE = 7;
-	private static final int AISLE_ID = 8;
-	private static final int STORES_WITH_ALL = 9;
+	// Odd numbers have an ID, evens don't.
+	private static final int ITEMS = 0;
+	private static final int ITEM_ID = 1;
+	private static final int ITEM_AISLE = 2;
+	private static final int ITEM_AISLE_ID = 3;
+	private static final int STORE = 4;
+	private static final int STORE_ID = 5;
+	private static final int AISLE = 6;
+	private static final int AISLE_ID = 7;
+	private static final int STORES_WITH_ALL = 8;
 
 	public static final String AUTHORITY = "fake.domain.adamlopresto.goshop.contentprovider";
 
@@ -243,50 +243,28 @@ public class GoShopContentProvider extends ContentProvider {
 		int uriType = sURIMatcher.match(uri);
 		SQLiteDatabase sqlDB = helper.getWritableDatabase();
 		int rowsUpdated = 0;
-		String id;
+
+		//If it's odd, then it has an ID appended.
+		if ((uriType % 2) == 1){
+			String id = uri.getLastPathSegment();
+			selection = appendSelection(selection, "_id = ?");
+			selectionArgs = appendSelectionArg(selectionArgs, id);
+			uriType--;
+		}
+
 		switch (uriType) {
 		case ITEMS:
-			rowsUpdated = sqlDB.update(ItemsTable.TABLE, 
-					values, 
-					selection,
-					selectionArgs);
-			
-			getContext().getContentResolver().notifyChange(ITEM_AISLE_URI, null);
-			break;
-		case ITEM_ID:
-			id = uri.getLastPathSegment();
-			if (TextUtils.isEmpty(selection)) {
-				rowsUpdated = sqlDB.update(ItemsTable.TABLE, 
-						values,
-						ItemsTable.COLUMN_ID + "=" + id, 
-						null);
-			} else {
-				rowsUpdated = sqlDB.update(ItemsTable.TABLE, 
-						values,
-						ItemsTable.COLUMN_ID + "=" + id 
-						+ " and " 
-						+ selection,
-						selectionArgs);
-			}
+			rowsUpdated = sqlDB.update(ItemsTable.TABLE, values, selection, selectionArgs);
 			getContext().getContentResolver().notifyChange(ITEM_AISLE_URI, null);
 			getContext().getContentResolver().notifyChange(ITEM_URI, null);
 			break;
-		case AISLE_ID:
-			id = uri.getLastPathSegment();
-			if (TextUtils.isEmpty(selection)) {
-				rowsUpdated = sqlDB.update(AislesTable.TABLE, 
-						values,
-						AislesTable.COLUMN_ID + "=" + id, 
-						null);
-			} else {
-				rowsUpdated = sqlDB.update(AislesTable.TABLE, 
-						values,
-						AislesTable.COLUMN_ID + "=" + id 
-						+ " and " 
-						+ selection,
-						selectionArgs);
-			}
+		case AISLE:
+			rowsUpdated = sqlDB.update(AislesTable.TABLE, values, selection, selectionArgs);
 			getContext().getContentResolver().notifyChange(ITEM_AISLE_URI, null);
+			getContext().getContentResolver().notifyChange(AISLES_URI, null);
+			break;
+		case STORE:
+			rowsUpdated = sqlDB.update(StoresTable.TABLE, values, selection, selectionArgs);
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -303,6 +281,14 @@ public class GoShopContentProvider extends ContentProvider {
 			return originalValues;
 		}
 		return DatabaseUtils.appendSelectionArgs(originalValues, newValues);
+	}
+	
+	private static String appendSelection(String original, String newSelection){
+		return DatabaseUtils.concatenateWhere(original, newSelection);
+	}
+	
+	private static String[] appendSelectionArg(String[] originalValues, String newValue){
+		return appendSelectionArgs(originalValues, new String[]{newValue});
 	}
 
 }

@@ -7,5 +7,8 @@
         android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:title="@string/menu_cancel"/>
+    <item android:id="@+id/new_store" android:title="@string/new_store"></item>
+    <item android:id="@+id/rename_store" android:title="@string/rename_store"></item>
+    <item android:id="@+id/delete_store" android:title="@string/delete_store"></item>
 
 </menu>

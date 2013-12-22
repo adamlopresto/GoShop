@@ -1,9 +1,12 @@
 package fake.domain.adamlopresto.goshop;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -15,9 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import fake.domain.adamlopresto.goshop.contentprovider.GoShopContentProvider;
 import fake.domain.adamlopresto.goshop.tables.AislesTable;
@@ -125,6 +130,68 @@ implements LoaderManager.LoaderCallbacks<Cursor>{
 			setResult(RESULT_CANCELED);
 			finish();
 			return true;
+		case R.id.new_store:{
+			final EditText storeNameView = new EditText(this);
+			storeNameView.setHint(R.string.store_name);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setView(storeNameView);
+			builder.setNegativeButton(android.R.string.cancel, null);
+			builder.setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					ContentValues values = new ContentValues(3);
+					values.put(StoresTable.COLUMN_LIST, MainListActivity.list);
+					values.put(StoresTable.COLUMN_NAME, storeNameView.getText().toString().trim());
+					Uri newItem = getContentResolver().insert(GoShopContentProvider.STORES_URI, values);
+					store = Long.valueOf(newItem.getLastPathSegment());
+					values.clear();
+					values.put(AislesTable.COLUMN_NAME, getString(R.string.unfiled));
+					values.put(AislesTable.COLUMN_SORT, "000");
+					values.put(AislesTable.COLUMN_STORE, store);
+					getContentResolver().insert(GoShopContentProvider.AISLES_URI, values);
+				}
+			});
+			AlertDialog dialog = builder.create(); 
+			dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); 
+			dialog.show();
+			return true;
+		}
+		case R.id.rename_store:{
+			final EditText storeNameView = new EditText(this);
+			storeNameView.setHint(R.string.store_name);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setView(storeNameView);
+			builder.setNegativeButton(android.R.string.cancel, null);
+			builder.setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					ContentValues values = new ContentValues(1);
+					values.put(StoresTable.COLUMN_NAME, storeNameView.getText().toString().trim());
+					getContentResolver().update(GoShopContentProvider.STORES_URI, values, "_id = ?", 
+							new String[]{String.valueOf(store)});
+				}
+			});
+			AlertDialog dialog = builder.create(); 
+			dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE); 
+			dialog.show();
+			return true;
+			
+		}
+		case R.id.delete_store:{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.delete_store_prompt);
+			builder.setNegativeButton(android.R.string.cancel, null);
+			builder.setPositiveButton(R.string.menu_delete, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					getContentResolver().delete(GoShopContentProvider.STORES_URI, "_id = ?", 
+							new String[]{String.valueOf(store)});
+					store=MainListActivity.store;
+				}
+			});
+			builder.show();
+			return true;
+		}
 		}
 		return super.onOptionsItemSelected(item);
 	}
