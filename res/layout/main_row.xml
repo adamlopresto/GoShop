@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:measureAllChildren="false" >
+
+<RelativeLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" 
     style="@style/activatedBackgroundIndicator"
@@ -92,3 +97,14 @@
         />
     
 </RelativeLayout>
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/everything_else"
+	android:textStyle="bold"
+	android:paddingLeft="8dip"
+	android:paddingTop="16sp"
+    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</ViewSwitcher>

@@ -3,8 +3,10 @@ package fake.domain.adamlopresto.goshop;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.ViewSwitcher;
 
 public class ItemCursorAdapter extends SimpleCursorAdapter {
 
@@ -13,6 +15,37 @@ public class ItemCursorAdapter extends SimpleCursorAdapter {
 			String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
 		this.context=context;
+	}
+	
+	@Override
+	public void bindView(View view, Context context, Cursor cursor){
+		if (cursor.getLong(0) == -1L){
+			if (cursor.isLast())
+				view.setVisibility(View.GONE);
+			else {
+				view.setVisibility(View.VISIBLE);
+				((ViewSwitcher)view).setDisplayedChild(1);
+			}
+		} else{
+			view.setVisibility(View.VISIBLE);
+			((ViewSwitcher)view).setDisplayedChild(0);
+			super.bindView(view, context, cursor);
+		}
+	}
+	
+	@Override
+	public boolean isEnabled(int position){
+		Cursor c = getCursor();
+		if (c == null)
+			return true;
+		if (c.moveToPosition(position))
+			return c.getLong(0) != -1L;
+		return true;
+	}
+	
+	@Override
+	public boolean areAllItemsEnabled(){
+		return false;
 	}
 
 	@Override

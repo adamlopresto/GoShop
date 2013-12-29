@@ -95,12 +95,14 @@ public class MainListActivity extends ListActivity
 	        switch (item.getItemId()) {
 	            case R.id.edit:{
 	            	long tempId = getListView().getCheckedItemIds()[0];
+	            	/*
 	            	if (oneStore){
 	            		Cursor c = getContentResolver().query(Uri.parse(GoShopContentProvider.ITEM_AISLE_URI+"/"+tempId), new String[]{ItemAisleDetailView.COLUMN_ITEM}, null, null, null);
 	            		c.moveToFirst();
 	            		tempId = c.getLong(0);
 	            		c.close();
 	            	}
+	            	*/
 	            	final long id = tempId;
 	                mode.finish(); // Action picked, so close the CAB
 	                Intent i = new Intent(MainListActivity.this, ItemDetailActivity.class);
@@ -125,12 +127,7 @@ public class MainListActivity extends ListActivity
 	            	return true;
 	            }
 	            case R.id.delete:{
-	            	Uri tmpUri;
-	            	if (oneStore)
-	            		tmpUri = GoShopContentProvider.ITEM_AISLE_URI;
-	            	else 
-	            		tmpUri = GoShopContentProvider.ITEM_URI;
-	            	final Uri uri = tmpUri;
+	            	final Uri uri = GoShopContentProvider.ITEM_URI;
 	            	final long[] ids = getListView().getCheckedItemIds();
 	            	new AlertDialog.Builder(MainListActivity.this)
 	            	.setMessage("Delete these items?")
@@ -220,17 +217,9 @@ public class MainListActivity extends ListActivity
 	}
 	
 	private void createAdapter(){
-		String[] from;
-		int[] to;
+		String[] from = new String[] {ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY, ItemAisleDetailView.COLUMN_UNITS, ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, ItemAisleDetailView.COLUMN_AISLE_NAME};;
+		int[] to = new int[] {R.id.row_item_name,R.id.row_item_price, R.id.row_item_quantity, R.id.row_item_units, R.id.row_item_notes, R.id.row_item_status, R.id.row_item_aisle};
 		
-		if (TextUtils.isEmpty(query) && store != -1L){
-			from = new String[] {ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY, ItemAisleDetailView.COLUMN_UNITS, ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, ItemAisleDetailView.COLUMN_AISLE_NAME};
-			to = new int[] {R.id.row_item_name,R.id.row_item_price, R.id.row_item_quantity, R.id.row_item_units, R.id.row_item_notes, R.id.row_item_status, R.id.row_item_aisle};
-		} else {
-			from = new String[] {ItemsTable.COLUMN_NAME, ItemsTable.COLUMN_PRICE, ItemsTable.COLUMN_QUANTITY, ItemsTable.COLUMN_UNITS, ItemsTable.COLUMN_NOTES, ItemsTable.COLUMN_STATUS};
-			to = new int[] {R.id.row_item_name,R.id.row_item_price, R.id.row_item_quantity, R.id.row_item_units, R.id.row_item_notes, R.id.row_item_status};
-		}
-
 		adapter = new ItemCursorAdapter(this, R.layout.main_row, null, from,
 				to, 0);
 		
@@ -398,45 +387,6 @@ public class MainListActivity extends ListActivity
 		startActivity(i);
 	}
 
-	/*
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, EDIT_ID, 0, R.string.menu_edit);
-		menu.add(0, DELETE_ID, 0, R.string.menu_delete);
-	}
-	
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		long id = info.id;
-		if (!oneStore){
-			id = info.id;
-		} else {
-			Cursor c = getContentResolver().query(Uri.parse(GoShopContentProvider.ITEM_AISLE_URI+"/"+id), new String[]{ItemAisleDetailView.COLUMN_ITEM}, null, null, null);
-			c.moveToFirst();
-			id = c.getLong(0);
-			c.close();
-		}
-		Uri uri = Uri.parse(GoShopContentProvider.ITEM_URI + "/"+ id);
-
-		switch (item.getItemId()) {
-		case EDIT_ID:
-			Intent i = new Intent(this, ItemDetailActivity.class);
-			i.putExtra(GoShopContentProvider.CONTENT_ITEM_TYPE, uri);
-			startActivity(i);
-			return true;
-
-		case DELETE_ID:
-			getContentResolver().delete(uri, null, null);
-			//fillData();
-			return true;
-		}
-		return super.onContextItemSelected(item);
-	}
-	*/
-
 	//@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (id == ITEM_LOADER){
@@ -452,7 +402,7 @@ public class MainListActivity extends ListActivity
 					sort = ItemAisleDetailView.COLUMN_ITEM_NAME;
 				} else {
 					selection = "status <> 'H'";
-					sort = "case when status = 'N' then 1 when status = 'P' then 2 else 3 end";
+					sort = "case status when 'N' then 1 when 'P' then 2 else 3 end";
 					if (oneStore){
 						sort += ", "+ItemAisleDetailView.COLUMN_SORT;
 					}
@@ -467,21 +417,31 @@ public class MainListActivity extends ListActivity
 			}
 
 			if (oneStore){
-				uri = GoShopContentProvider.ITEM_AISLE_URI;
-				projection = new String[]{ ItemAisleDetailView.COLUMN_ID,
+				projection = new String[]{ ItemAisleDetailView.COLUMN_ITEM + " as _id",
+						ItemAisleDetailView.COLUMN_ITEM_NAME, 
+						ItemAisleDetailView.COLUMN_PRICE, 
+						ItemAisleDetailView.COLUMN_QUANTITY,
+						ItemAisleDetailView.COLUMN_UNITS,
+						ItemAisleDetailView.COLUMN_NOTES, 
+						ItemAisleDetailView.COLUMN_STATUS, 
+						ItemAisleDetailView.COLUMN_AISLE_NAME };
+				if (showAll){
+					uri = GoShopContentProvider.ITEM_AISLE_URI;
+					selection = DatabaseUtils.concatenateWhere(selection, ItemAisleDetailView.COLUMN_STORE + "=?");
+					selectionArgs = DatabaseUtils.appendSelectionArgs(selectionArgs, new String[]{String.valueOf(store)});
+				} else {
+					return new CursorLoader(this, 
+						Uri.withAppendedPath(GoShopContentProvider.EVERYTHING_NEEDED_URI, String.valueOf(store)),
+						projection, null, null, null);
+				}
+
+			} else {
+				uri = GoShopContentProvider.ITEM_URI;
+				projection = new String[]{ ItemsTable.COLUMN_ID,
 						ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY,
 						ItemAisleDetailView.COLUMN_UNITS,
 						ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, 
-						ItemAisleDetailView.COLUMN_AISLE_NAME };
-				selection = DatabaseUtils.concatenateWhere(selection, ItemAisleDetailView.COLUMN_STORE + "=?");
-				selectionArgs = DatabaseUtils.appendSelectionArgs(selectionArgs, new String[]{String.valueOf(store)});
-				//sort = ItemAisleDetailView.COLUMN_SORT+", "+sort;
-			} else {
-				uri = GoShopContentProvider.ITEM_URI;
-				projection = new String[]{ ItemAisleDetailView.COLUMN_ID,
-						ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY,
-						ItemAisleDetailView.COLUMN_UNITS,
-						ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS };
+						"NULL AS "+ItemAisleDetailView.COLUMN_AISLE_NAME};
 			}
 
 			CursorLoader cursorLoader = new CursorLoader(this,
@@ -495,7 +455,6 @@ public class MainListActivity extends ListActivity
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.e("GoShop", "onLoadFinished");
 		switch (loader.getId()){
 		case ITEM_LOADER:
 			findViewById(R.id.progress).setVisibility(View.GONE);
@@ -530,13 +489,9 @@ public class MainListActivity extends ListActivity
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
+		if (id == -1L)
+			return;
 		
-		if (oneStore){
-			Cursor c = getContentResolver().query(Uri.parse(GoShopContentProvider.ITEM_AISLE_URI+"/"+id), new String[]{ItemAisleDetailView.COLUMN_ITEM}, null, null, null);
-			c.moveToFirst();
-			id = c.getLong(0);
-			c.close();
-		}
 		Uri uri = Uri.parse(GoShopContentProvider.ITEM_URI + "/"+ id);
 		
 		String[] projection = new String[] {ItemsTable.COLUMN_STATUS};
@@ -567,17 +522,14 @@ public class MainListActivity extends ListActivity
 			prefs.edit().putString(SettingsFragment.PREF_STORE, "-1").apply();
 		} else if (key.equals(SettingsFragment.PREF_STORE)){
 			store = Long.valueOf(prefs.getString(SettingsFragment.PREF_STORE, "-1"));
-			createAdapter();
+			//createAdapter();
 			resetLoader();
 		}
 	}
 
 	@Override
 	public boolean onQueryTextChange(String text) {
-		boolean needNewAdapter = TextUtils.isEmpty(text) != TextUtils.isEmpty(query);
 		query = text.trim();
-		if (needNewAdapter)
-			createAdapter();
 		
 		resetLoader();
 		return true;
@@ -585,23 +537,20 @@ public class MainListActivity extends ListActivity
 
 	@Override
 	public boolean onQueryTextSubmit(String arg0) {
-		Log.e("GoShop", "onQueryTextSubmit");
 		return false;
 	}
 
 	@Override
 	public boolean onMenuItemActionCollapse(MenuItem arg0) {
-		Log.e("GoShop", "onMenuItemActionCollapse");
 		newMenuItem.setVisible(false);
 		query = null;
-		createAdapter();
+		//createAdapter();
 		resetLoader();
 		return true;
 	}
 
 	@Override
 	public boolean onMenuItemActionExpand(MenuItem arg0) {
-		Log.e("GoShop", "onMenuItemActionExpand");
 		newMenuItem.setVisible(true);
 		return true;
 	}

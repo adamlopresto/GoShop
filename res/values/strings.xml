@@ -62,5 +62,6 @@
     <string name="unfiled">Unfiled</string>
     <string name="rename_store">Rename this store</string>
     <string name="rename">Rename</string>
+    <string name="everything_else">OTHER STORES</string>
 
 </resources>

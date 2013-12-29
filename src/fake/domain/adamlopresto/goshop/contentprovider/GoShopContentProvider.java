@@ -31,30 +31,30 @@ public class GoShopContentProvider extends ContentProvider {
 	private static final int AISLE = 6;
 	private static final int AISLE_ID = 7;
 	private static final int STORES_WITH_ALL = 8;
+	private static final int EVERYTHING_NEEDED = 11;
 
 	public static final String AUTHORITY = "fake.domain.adamlopresto.goshop.contentprovider";
+	public static final Uri BASE = Uri.parse("content://"+AUTHORITY);
 
 	private static final String ITEM_BASE_PATH = "items";
-	public static final Uri ITEM_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + ITEM_BASE_PATH);
+	public static final Uri ITEM_URI = Uri.withAppendedPath(BASE, ITEM_BASE_PATH);
 
 	private static final String ITEM_AISLE_BASE_PATH = "item_aisle";
-	public static final Uri ITEM_AISLE_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + ITEM_AISLE_BASE_PATH);
+	public static final Uri ITEM_AISLE_URI = Uri.withAppendedPath(BASE, ITEM_AISLE_BASE_PATH);
 
 	private static final String STORES_BASE_PATH = "stores";
-	public static final Uri STORES_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + STORES_BASE_PATH);
+	public static final Uri STORES_URI = Uri.withAppendedPath(BASE, STORES_BASE_PATH);
 	private static final String STORES_WITH_ALL_PATH = STORES_BASE_PATH+"/with_all";
-	public static final Uri STORES_WITH_ALL_URI = Uri.parse("content://"+AUTHORITY+"/"+STORES_WITH_ALL_PATH);
-
+	public static final Uri STORES_WITH_ALL_URI = Uri.withAppendedPath(BASE, STORES_WITH_ALL_PATH);
 
 	private static final String AISLES_BASE_PATH = "aisles";
-	public static final Uri AISLES_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + AISLES_BASE_PATH);
+	public static final Uri AISLES_URI = Uri.withAppendedPath(BASE, AISLES_BASE_PATH);
+	
+	private static final String EVERYTHING_NEEDED_BASE_PATH = "everything_needed";
+	public static final Uri EVERYTHING_NEEDED_URI = Uri.withAppendedPath(BASE, EVERYTHING_NEEDED_BASE_PATH);
 
-	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-			+ "/GoShopItems";
+	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE;
+			
 	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
 			+ "/GoShopItem";
 
@@ -69,6 +69,7 @@ public class GoShopContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, AISLES_BASE_PATH, AISLE);
 		sURIMatcher.addURI(AUTHORITY, AISLES_BASE_PATH+"/#", AISLE_ID);
 		sURIMatcher.addURI(AUTHORITY, STORES_WITH_ALL_PATH, STORES_WITH_ALL);
+		sURIMatcher.addURI(AUTHORITY, EVERYTHING_NEEDED_BASE_PATH+"/#", EVERYTHING_NEEDED);
 	}
 
 	@Override
@@ -183,11 +184,44 @@ public class GoShopContentProvider extends ContentProvider {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		queryBuilder.setDistinct(true);
 
-		// Check if the caller has requested a column which does not exists
-		ItemAisleDetailView.checkColumns(projection);
-
 		int uriType = sURIMatcher.match(uri);
 		switch (uriType) {
+		case EVERYTHING_NEEDED:{
+			String store = uri.getLastPathSegment();
+			/*
+			ItemAisleDetailView.COLUMN_ITEM + " as _id",
+			ItemAisleDetailView.COLUMN_ITEM_NAME, 
+			ItemAisleDetailView.COLUMN_PRICE, 
+			ItemAisleDetailView.COLUMN_QUANTITY,
+			ItemAisleDetailView.COLUMN_UNITS,
+			ItemAisleDetailView.COLUMN_NOTES, 
+			ItemAisleDetailView.COLUMN_STATUS, 
+			ItemAisleDetailView.COLUMN_AISLE_NAME
+			*/
+			Cursor c = helper.getReadableDatabase().rawQuery(
+				"SELECT _id, item_name, price, quantity, units, notes, " +
+					"status, category, aisle_name " +
+				"FROM ("+
+				"SELECT item as _id, item_name, price, quantity, units, notes, " +
+					"status, category, aisle_name, 1 as sort1, sort " +
+				"FROM item_aisle_detail where status <> 'H' and store=? " +
+				"UNION SELECT -1 as _id, null as item_name, null as price, null as quantity, " +
+ 				"null as units, null as notes, null as status, null as category, " +
+ 				"null as aisle_name, 2 as sort1, null as sort " +
+				"UNION SELECT _id, item_name, price, quantity, units, notes, " +
+					"status, category, null as aisle_name, 3 as sort1, null as sort " +
+				"FROM items i where status <> 'H' and not exists " +
+					"(select * from item_aisle ia inner join aisles a " +
+					"on ia.item = i._id and ia.aisle = a._id and a.store = ?) " +
+				"ORDER by sort1, " +
+				"status, "+
+				"sort, item_name"+
+				")",
+				new String[]{store, store}
+			);
+			c.setNotificationUri(getContext().getContentResolver(), ITEM_AISLE_URI);
+			return c;
+		}
 		case ITEM_ID:
 			queryBuilder.appendWhere(ItemsTable.COLUMN_ID + "="
 					+ uri.getLastPathSegment());
