@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <CheckBoxPreference android:summaryOn="@string/show_all_on" android:summaryOff="@string/show_all_off" android:key="@string/pref_show_all" android:title="@string/show_all" android:defaultValue="false"/>
-    <fake.domain.adamlopresto.goshop.CursorListPreference android:key="@string/pref_list" android:title="@string/pref_list_title"/>
-    <fake.domain.adamlopresto.goshop.CursorListPreference android:key="@string/pref_store" android:title="@string/pref_store_title"/>
-    <EditTextPreference android:key="@string/pref_sms_recipient" android:title="@string/pref_sms_recipient_title" android:inputType="phone"/>
-    
-
-</PreferenceScreen>

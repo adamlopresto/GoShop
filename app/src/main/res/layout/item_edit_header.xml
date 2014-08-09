@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" 
+    android:columnCount="2">
+    
+    <RadioGroup android:layout_columnSpan="2" android:orientation="horizontal" android:layout_width="fill_parent" >
+        <RadioButton android:id="@+id/item_detail_need" android:text="@string/need" android:checked="true"/>
+        <RadioButton android:id="@+id/item_detail_purchased" android:text="@string/purchased" />
+        <RadioButton android:id="@+id/item_detail_have" android:text="@string/have" />
+    </RadioGroup>
+    
+    <TextView android:text="@string/name_label" />
+
+    <EditText
+        android:id="@+id/item_detail_name"
+        android:layout_width="0dip"
+        android:layout_gravity="fill_horizontal"
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences" />
+    
+    <TextView android:text="@string/quantity_label" />
+
+    <EditText
+        android:id="@+id/item_detail_quantity"
+        android:layout_width="0dp"
+        android:layout_gravity="fill_horizontal"
+        android:inputType="numberDecimal" />
+    
+    <TextView android:text="@string/units_label" />
+
+    <EditText
+        android:id="@+id/item_detail_units"
+        android:layout_width="0dip"
+        android:layout_gravity="fill_horizontal"
+        android:inputType="text"
+        android:text="@string/default_units" />
+    
+    <TextView android:text="@string/notes_label" />
+
+    <EditText
+        android:id="@+id/item_detail_notes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:inputType="textMultiLine|textCapSentences" />
+    
+    <TextView android:text="@string/price_label" />
+    <EditText android:id="@+id/item_detail_price" android:inputType="numberDecimal" 
+        android:layout_width="0dp"
+        android:layout_gravity="fill_horizontal"
+        />
+    
+    <TextView android:text="@string/category_label" />
+
+    <EditText
+        android:id="@+id/item_detail_category"
+        android:inputType="textCapSentences" 
+        android:layout_width="0dp"
+        android:layout_gravity="fill_horizontal"
+        />
+
+</GridLayout>
