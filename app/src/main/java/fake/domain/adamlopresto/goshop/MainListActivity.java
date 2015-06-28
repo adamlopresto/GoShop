@@ -23,6 +23,7 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
@@ -317,64 +318,70 @@ public class MainListActivity extends ListActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_create:
-			createItem();
-			return true;
-		case R.id.menu_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
-			return true;
-		case R.id.menu_show_all:
-			prefs.edit().putBoolean(SettingsFragment.PREF_SHOW_ALL, !showAll).apply();
-			return true;
+			case R.id.menu_create:
+				createItem();
+				return true;
+			case R.id.menu_settings:
+				startActivity(new Intent(this, SettingsActivity.class));
+				return true;
+			case R.id.menu_show_all:
+				prefs.edit().putBoolean(SettingsFragment.PREF_SHOW_ALL, !showAll).apply();
+				return true;
 		/*
 		case R.id.menu_import:
 			startActivity(new Intent(this, ImportActivity.class));
 			return true;
 		*/
-		case R.id.menu_send:
-		{
-			
-			StringBuffer sb = new StringBuffer("GoShop:");
-			Cursor c = adapter.getCursor();
-			int pos = c.getPosition();
-			int col = c.getColumnIndexOrThrow(ItemsTable.COLUMN_NAME);
-			int stat = c.getColumnIndexOrThrow(ItemsTable.COLUMN_STATUS);
-			c.moveToFirst();
-			while (!c.isAfterLast()){
-				if ("N".equals(c.getString(stat))){
-					sb.append("\n");
-					sb.append(c.getString(col));
-				}
-				c.moveToNext();
+			case R.id.menu_send:
+			{
+
+				String body = getSendableString();
+				sendSMS(body);
+
+				return true;
+
 			}
-			c.moveToPosition(pos);
-			
-			sendSMS(sb.toString());
-			
-			return true;
-			
-		}
-		case R.id.menu_checkout:
-			new AlertDialog.Builder(this)
-		    .setTitle("Checkout")
-		    .setMessage("Remove purchased items from list?")
-		    .setPositiveButton("Checkout", new DialogInterface.OnClickListener() {
-		        public void onClick(DialogInterface dialog, int which) { 
-		        	ContentValues cv = new ContentValues();
-		        	cv.put(ItemsTable.COLUMN_STATUS, "H");
-		        	getContentResolver().update(GoShopContentProvider.ITEM_URI, cv, ItemsTable.COLUMN_STATUS+"='P'", null);
-		        	//resetLoader();
-		        }
-		     })
-		    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		        public void onClick(DialogInterface dialog, int which) { 
-		            // do nothing
-		        }
-		     })
-		     .show();
-			return true;
+			case R.id.menu_checkout:
+				new AlertDialog.Builder(this)
+						.setTitle("Checkout")
+						.setMessage("Remove purchased items from list?")
+						.setPositiveButton("Checkout", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								ContentValues cv = new ContentValues();
+								cv.put(ItemsTable.COLUMN_STATUS, "H");
+								getContentResolver().update(GoShopContentProvider.ITEM_URI, cv, ItemsTable.COLUMN_STATUS+"='P'", null);
+								//resetLoader();
+							}
+						})
+						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								// do nothing
+							}
+						})
+						.show();
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@NonNull
+	private String getSendableString() {
+		StringBuilder sb = new StringBuilder("GoShop:");
+		Cursor c = adapter.getCursor();
+		int pos = c.getPosition();
+		int col = c.getColumnIndexOrThrow(ItemsTable.COLUMN_NAME);
+		int stat = c.getColumnIndexOrThrow(ItemsTable.COLUMN_STATUS);
+		c.moveToFirst();
+		while (!c.isAfterLast()){
+            if ("N".equals(c.getString(stat))){
+                sb.append("\n");
+                sb.append(c.getString(col));
+            }
+            c.moveToNext();
+        }
+		c.moveToPosition(pos);
+
+		return sb.toString();
 	}
 
 	@SuppressLint("DefaultLocale")
