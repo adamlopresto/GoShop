@@ -58,7 +58,7 @@ implements LoaderManager.LoaderCallbacks<Cursor>{
 		storeAdapter = new SimpleCursorAdapter(ab.getThemedContext(), android.R.layout.simple_spinner_item, null, 
 				storeFrom, storeTo, 0);	
 		
-		storeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		storeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 		
 		ab.setListNavigationCallbacks(storeAdapter, new ActionBar.OnNavigationListener() {
 			

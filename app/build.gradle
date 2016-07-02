@@ -1,23 +1,26 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
-
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
     defaultConfig {
         applicationId "fake.domain.adamlopresto.goshop"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 24
     }
-
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    productFlavors {
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:support-v4:24.0.0'
 }

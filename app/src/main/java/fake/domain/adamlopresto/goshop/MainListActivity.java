@@ -1,8 +1,5 @@
 package fake.domain.adamlopresto.goshop;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
@@ -39,6 +36,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import fake.domain.adamlopresto.goshop.contentprovider.GoShopContentProvider;
 import fake.domain.adamlopresto.goshop.tables.ItemAisleDetailView;
 import fake.domain.adamlopresto.goshop.tables.ItemsTable;
@@ -204,8 +205,7 @@ public class MainListActivity extends ListActivity
 		spinnerAdapter = new SimpleCursorAdapter(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, 
 				null,
 				new String[]{StoresTable.COLUMN_NAME}, new int[]{android.R.id.text1}, 0);
-		
-		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 		
 		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 		
