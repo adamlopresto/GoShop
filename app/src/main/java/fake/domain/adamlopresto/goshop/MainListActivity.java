@@ -23,7 +23,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -218,8 +217,8 @@ public class MainListActivity extends ListActivity
 	}
 	
 	private void createAdapter(){
-		String[] from = new String[] {ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY, ItemAisleDetailView.COLUMN_UNITS, ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, ItemAisleDetailView.COLUMN_AISLE_NAME};;
-		int[] to = new int[] {R.id.row_item_name,R.id.row_item_price, R.id.row_item_quantity, R.id.row_item_units, R.id.row_item_notes, R.id.row_item_status, R.id.row_item_aisle};
+		String[] from = new String[] {ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY, ItemAisleDetailView.COLUMN_UNITS, ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, ItemAisleDetailView.COLUMN_AISLE_NAME, ItemAisleDetailView.COLUMN_CATEGORY};;
+		int[] to = new int[] {R.id.row_item_name,R.id.row_item_price, R.id.row_item_quantity, R.id.row_item_units, R.id.row_item_notes, R.id.row_item_status, R.id.row_item_aisle, R.id.row_item_category};
 		
 		adapter = new ItemCursorAdapter(this, R.layout.main_row, null, from,
 				to, 0);
@@ -247,12 +246,15 @@ public class MainListActivity extends ListActivity
 					} //fall through to default processing
 					break;
 				case 5:
-					if (TextUtils.isEmpty(cursor.getString(5))){
+                case 8: {
+					String item = cursor.getString(columnIndex);
+					if (TextUtils.isEmpty(item) || "Unfiled".equals(item)) {
 						view.setVisibility(View.GONE);
 					} else {
 						view.setVisibility(View.VISIBLE);
 					} //fall through to default processing
 					break;
+				}
 				}
 				return false;
 			}
@@ -418,9 +420,11 @@ public class MainListActivity extends ListActivity
 			} else {
 				oneStore = false;
 				selection = ItemAisleDetailView.COLUMN_ITEM_NAME + " LIKE ? OR " 
-						+ ItemAisleDetailView.COLUMN_NOTES + " LIKE ?";
-				selectionArgs = new String[]{"%"+query+"%", "%"+query+"%"};
-				sort = ItemAisleDetailView.COLUMN_ITEM_NAME + " LIKE "+DatabaseUtils.sqlEscapeString(query+"%")+" desc, " + ItemAisleDetailView.COLUMN_ITEM_NAME;
+						+ ItemAisleDetailView.COLUMN_NOTES + " LIKE ? OR "
+						+ ItemAisleDetailView.COLUMN_CATEGORY + " LIKE ?";
+				selectionArgs = new String[]{"%"+query+"%", "%"+query+"%", "%"+query+"%"};
+				sort = ItemAisleDetailView.COLUMN_ITEM_NAME + " LIKE "+DatabaseUtils.sqlEscapeString(query+"%")+" desc, "
+						+ ItemAisleDetailView.COLUMN_ITEM_NAME;
 			}
 
 			if (oneStore){
@@ -431,7 +435,9 @@ public class MainListActivity extends ListActivity
 						ItemAisleDetailView.COLUMN_UNITS,
 						ItemAisleDetailView.COLUMN_NOTES, 
 						ItemAisleDetailView.COLUMN_STATUS, 
-						ItemAisleDetailView.COLUMN_AISLE_NAME };
+						ItemAisleDetailView.COLUMN_AISLE_NAME,
+						ItemAisleDetailView.COLUMN_CATEGORY
+				};
 				if (showAll){
 					uri = GoShopContentProvider.ITEM_AISLE_URI;
 					selection = DatabaseUtils.concatenateWhere(selection, ItemAisleDetailView.COLUMN_STORE + "=?");
@@ -448,7 +454,9 @@ public class MainListActivity extends ListActivity
 						ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY,
 						ItemAisleDetailView.COLUMN_UNITS,
 						ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, 
-						"NULL AS "+ItemAisleDetailView.COLUMN_AISLE_NAME};
+						"NULL AS "+ItemAisleDetailView.COLUMN_AISLE_NAME,
+						ItemAisleDetailView.COLUMN_CATEGORY
+				};
 			}
 
 			CursorLoader cursorLoader = new CursorLoader(this,
@@ -483,7 +491,6 @@ public class MainListActivity extends ListActivity
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.e("GoShop", "onLoaderReset");
 		switch (loader.getId()){
 		case ITEM_LOADER:
 			adapter.swapCursor(null);

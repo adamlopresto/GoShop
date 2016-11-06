@@ -93,8 +93,20 @@
         android:layout_toLeftOf="@id/row_item_quantity"
         android:layout_toRightOf="@id/row_item_status"
         android:textIsSelectable="false"
+        />
+
+    <TextView
+        android:id="@+id/row_item_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row_item_notes"
+        android:layout_gravity="left"
+        android:layout_toLeftOf="@id/row_item_quantity"
+        android:layout_toRightOf="@id/row_item_status"
+        android:textIsSelectable="false"
         android:paddingBottom="6dp"
         />
+
     
 </RelativeLayout>
 
