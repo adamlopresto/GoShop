@@ -452,7 +452,8 @@ public class MainListActivity extends ListActivity
 			} else {
 				uri = GoShopContentProvider.ITEM_URI;
 				projection = new String[]{ ItemsTable.COLUMN_ID,
-						ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_QUANTITY,
+						ItemAisleDetailView.COLUMN_ITEM_NAME, ItemAisleDetailView.COLUMN_PRICE,
+						ItemAisleDetailView.COLUMN_QUANTITY,
 						ItemAisleDetailView.COLUMN_UNITS,
 						ItemAisleDetailView.COLUMN_NOTES, ItemAisleDetailView.COLUMN_STATUS, 
 						"NULL AS "+ItemAisleDetailView.COLUMN_AISLE_NAME,
@@ -460,9 +461,7 @@ public class MainListActivity extends ListActivity
 				};
 			}
 
-			CursorLoader cursorLoader = new CursorLoader(this,
-					uri, projection, selection, selectionArgs, sort);
-			return cursorLoader;
+			return new CursorLoader(this, uri, projection, selection, selectionArgs, sort);
 		} else if (id == STORE_LOADER){
 			return new CursorLoader(this, GoShopContentProvider.STORES_WITH_ALL_URI, null, null, null, null);
 		} else {
