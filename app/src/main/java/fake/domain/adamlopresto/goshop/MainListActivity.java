@@ -250,6 +250,7 @@ public class MainListActivity extends ListActivity
 					String item = cursor.getString(columnIndex);
 					if (TextUtils.isEmpty(item) || "Unfiled".equals(item)) {
 						view.setVisibility(View.GONE);
+
 					} else {
 						view.setVisibility(View.VISIBLE);
 					} //fall through to default processing

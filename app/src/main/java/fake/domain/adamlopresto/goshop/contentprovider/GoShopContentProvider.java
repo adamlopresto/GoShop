@@ -200,16 +200,16 @@ public class GoShopContentProvider extends ContentProvider {
 			*/
 			Cursor c = helper.getReadableDatabase().rawQuery(
 				"SELECT _id, item_name, price, quantity, units, notes, " +
-					"status, category, aisle_name " +
+					"status, aisle_name, category " +
 				"FROM ("+
 				"SELECT item as _id, item_name, price, quantity, units, notes, " +
-					"status, category, aisle_name, 1 as sort1, sort " +
+					"status, aisle_name, category, 1 as sort1, sort " +
 				"FROM item_aisle_detail where status <> 'H' and store=? " +
 				"UNION SELECT -1 as _id, null as item_name, null as price, null as quantity, " +
- 				"null as units, null as notes, null as status, null as category, " +
- 				"null as aisle_name, 2 as sort1, null as sort " +
+ 				"null as units, null as notes, null as status, null as aisle_name, " +
+ 				"null as category, 2 as sort1, null as sort " +
 				"UNION SELECT _id, item_name, price, quantity, units, notes, " +
-					"status, category, null as aisle_name, 3 as sort1, null as sort " +
+					"status, null as aisle_name, category, 3 as sort1, null as sort " +
 				"FROM items i where status <> 'H' and not exists " +
 					"(select * from item_aisle ia inner join aisles a " +
 					"on ia.item = i._id and ia.aisle = a._id and a.store = ?) " +
