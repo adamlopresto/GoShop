@@ -5,9 +5,19 @@
     android:columnCount="2">
     
     <RadioGroup android:layout_columnSpan="2" android:orientation="horizontal" android:layout_width="fill_parent" >
-        <RadioButton android:id="@+id/item_detail_need" android:text="@string/need" android:checked="true"/>
-        <RadioButton android:id="@+id/item_detail_purchased" android:text="@string/purchased" />
-        <RadioButton android:id="@+id/item_detail_have" android:text="@string/have" />
+        <RadioButton android:id="@+id/item_detail_need"
+                     android:text="@string/need"
+                     android:checked="true"
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"/>
+        <RadioButton android:id="@+id/item_detail_purchased"
+                     android:text="@string/purchased"
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"/>
+        <RadioButton android:id="@+id/item_detail_have"
+                     android:text="@string/have"
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"/>
     </RadioGroup>
     
     <TextView android:text="@string/name_label" />

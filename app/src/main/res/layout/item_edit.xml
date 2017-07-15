@@ -7,6 +7,7 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:descendantFocusability="beforeDescendants"
     />
 
 </FrameLayout>

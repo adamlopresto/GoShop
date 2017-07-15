@@ -51,7 +51,7 @@
             android:name="fake.domain.adamlopresto.goshop.ItemDetailActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/title_activity_item_edit"
-            android:windowSoftInputMode="stateHidden" >
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity android:name="fake.domain.adamlopresto.goshop.SettingsActivity" />
         <activity
