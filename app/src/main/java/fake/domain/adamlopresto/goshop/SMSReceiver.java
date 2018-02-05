@@ -57,7 +57,7 @@ public class SMSReceiver extends BroadcastReceiver {
 	    context.getContentResolver().notifyChange(GoShopContentProvider.ITEM_URI, null);
 		context.getContentResolver().notifyChange(GoShopContentProvider.ITEM_AISLE_URI, null);
 	    
-	    Toast.makeText(context, "Updated list. Marked "+items.length+" items needed.", Toast.LENGTH_LONG).show();
+	    Toast.makeText(context, "Updated list. Marked "+(items.length-1)+" items needed.", Toast.LENGTH_LONG).show();
 	}
 
 }
