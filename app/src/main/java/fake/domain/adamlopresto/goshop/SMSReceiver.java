@@ -14,7 +14,7 @@ public class SMSReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-	    Object[] pdus=(Object[])intent.getExtras().get("pdus"); 
+	    Object[] pdus=(Object[])intent.getExtras().get("pdus");
 	    StringBuilder text=new StringBuilder(); 
 	    // get sender from first PDU 
 	    

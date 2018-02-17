@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -590,9 +591,12 @@ public class MainListActivity extends ListActivity
 		}
 
 
+		/*
 		Intent sendIntent = new Intent(Intent.ACTION_VIEW);
 		sendIntent.setData(Uri.parse("sms:" + destination));
 		sendIntent.putExtra("sms_body", body);
 		startActivity(sendIntent);
+		*/
+		SmsManager.getDefault().sendTextMessage(destination, null, body, null, null);
 	}
 }
