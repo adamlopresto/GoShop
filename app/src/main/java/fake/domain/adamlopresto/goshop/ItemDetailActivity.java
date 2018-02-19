@@ -39,6 +39,7 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 	private EditText mNotes;
 	private EditText mPrice;
 	private EditText mCategory;
+	private EditText mVoiceNames;
 	private Button addAisle;
 
 	private long listId;
@@ -73,7 +74,8 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 		mNotes     = (EditText)    header.findViewById(R.id.item_detail_notes);
 		mPrice     = (EditText)    header.findViewById(R.id.item_detail_price);
 		mCategory  = (EditText)    header.findViewById(R.id.item_detail_category);
-		
+		mVoiceNames= (EditText)    header.findViewById(R.id.item_detail_voice_names);
+
 		addAisle   = (Button)      footer.findViewById(R.id.add_aisle);
 		
 		addAisle.setOnClickListener(new OnClickListener(){
@@ -152,7 +154,7 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 		String[] projection = { ItemAisleDetailView.COLUMN_ITEM_NAME,
 				ItemAisleDetailView.COLUMN_QUANTITY, ItemAisleDetailView.COLUMN_UNITS,  ItemAisleDetailView.COLUMN_NOTES, 
 				ItemAisleDetailView.COLUMN_PRICE, ItemAisleDetailView.COLUMN_CATEGORY, ItemAisleDetailView.COLUMN_STATUS,
-				ItemAisleDetailView.COLUMN_LIST
+				ItemAisleDetailView.COLUMN_LIST, ItemAisleDetailView.COLUMN_VOICE_NAMES
 		};
 		Cursor cursor = getContentResolver().query(uri, projection, null, null,
 				null);
@@ -182,6 +184,8 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 					.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_PRICE)));
 			mCategory.setText(cursor.getString(cursor
 					.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_CATEGORY)));
+			mVoiceNames.setText(cursor.getString(cursor
+					.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_VOICE_NAMES)));
 			listId = cursor.getInt(cursor.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_LIST));
 
 			// Always close the cursor
@@ -255,6 +259,7 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 			values.putNull(ItemsTable.COLUMN_PRICE);
 		}
 		values.put(ItemsTable.COLUMN_CATEGORY, mCategory.getText().toString().trim());
+		values.put(ItemsTable.COLUMN_VOICE_NAMES, mVoiceNames.getText().toString().replace('\n', '#'));
 
 		if (uri == null) {
 			// New todo

@@ -20,6 +20,9 @@ public class ItemsTable {
 	public static final String COLUMN_STATUS = "status";
 	//status is "H" (have), "N" (need), "C" (cart)
 	public static final String COLUMN_CATEGORY = "category";
+	//as of version 3
+	//delimited by '#'
+	public static final String COLUMN_VOICE_NAMES = "voice_names";
 
 	public static void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE "+TABLE
@@ -32,7 +35,8 @@ public class ItemsTable {
 				+ COLUMN_NOTES + " text, "
 				+ COLUMN_PRICE + " real, "
 				+ COLUMN_STATUS + " text, " 
-				+ COLUMN_CATEGORY + " text collate nocase"
+				+ COLUMN_CATEGORY + " text collate nocase, "
+				+ COLUMN_VOICE_NAMES + " text collate nocase"
 				+ ")"
 		);
 		
@@ -44,6 +48,9 @@ public class ItemsTable {
 			ContentValues values = new ContentValues(1);
 			values.putNull(COLUMN_QUANTITY);
 			db.update(TABLE, values, COLUMN_QUANTITY + "=1.0 AND "+COLUMN_UNITS+"='each'", null);
+		}
+		if (oldVersion < 3){
+			db.execSQL("ALTER TABLE "+TABLE+" ADD "+COLUMN_VOICE_NAMES+" text collate nocase");
 		}
 	}
 

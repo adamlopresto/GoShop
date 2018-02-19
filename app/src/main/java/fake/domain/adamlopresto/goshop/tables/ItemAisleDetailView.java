@@ -25,7 +25,9 @@ public class ItemAisleDetailView {
 	public static final String COLUMN_STORE_NAME = "store_name";
 	public static final String COLUMN_AISLE_NAME = "aisle_name"; //
 	public static final String COLUMN_DESC = "description"; 
-	public static final String COLUMN_SORT = "sort";	
+	public static final String COLUMN_SORT = "sort";
+	//as of version 3
+	public static final String COLUMN_VOICE_NAMES = "voice_names";
 
 	public static void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE VIEW "+VIEW
@@ -45,8 +47,9 @@ public class ItemAisleDetailView {
 				+ StoresTable.TABLE + "." + StoresTable.COLUMN_NAME + " AS "+COLUMN_STORE_NAME + ", "
 				+ AislesTable.TABLE + "." + AislesTable.COLUMN_NAME + " AS "+COLUMN_AISLE_NAME + ", "
 				+ COLUMN_DESC + ", "
-				+ COLUMN_SORT
-				+ " FROM " + ItemsTable.TABLE + " INNER JOIN " + ItemAisleTable.TABLE 
+				+ COLUMN_SORT + ", "
+				+ COLUMN_VOICE_NAMES
+				+ " FROM " + ItemsTable.TABLE + " INNER JOIN " + ItemAisleTable.TABLE
 				+ " ON " + ItemsTable.TABLE + "." + ItemsTable.COLUMN_ID + "=" + ItemAisleTable.COLUMN_ITEM
 				+ " INNER JOIN " + AislesTable.TABLE 
 				+ " ON " + ItemAisleTable.COLUMN_AISLE + "=" + AislesTable.TABLE +"."+AislesTable.COLUMN_ID
@@ -56,10 +59,10 @@ public class ItemAisleDetailView {
 	}
 
 	public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-		/*
-		db.execSQL("DROP VIEW "+VIEW);
-		onCreate(db);
-		*/
+		if (oldVersion < 3) {
+            db.execSQL("DROP VIEW " + VIEW);
+            onCreate(db);
+        }
 	}
 
 	public static void checkColumns(String[] projection) {
@@ -80,6 +83,7 @@ public class ItemAisleDetailView {
 				COLUMN_AISLE_NAME,
 				COLUMN_DESC,
 				COLUMN_SORT,
+				COLUMN_VOICE_NAMES,
 		};
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));

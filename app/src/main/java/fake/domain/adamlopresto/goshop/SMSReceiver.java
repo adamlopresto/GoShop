@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 import fake.domain.adamlopresto.goshop.contentprovider.GoShopContentProvider;
 import fake.domain.adamlopresto.goshop.tables.ItemsTable;
@@ -46,8 +47,12 @@ public class SMSReceiver extends BroadcastReceiver {
 	    for (int i = 1; i < items.length; i++){
 	    	args[0] = items[i];
 	    	if (db.update(ItemsTable.TABLE, cv, ItemsTable.COLUMN_NAME + "= ?", args) <= 0){
-	    		insertValues.put(ItemsTable.COLUMN_NAME, items[i]);
-	    		db.insert(ItemsTable.TABLE, null, insertValues);
+				if (db.update(ItemsTable.TABLE, cv,
+						"'#' ||" + ItemsTable.COLUMN_VOICE_NAMES +
+								"|| '#' LIKE '%#' || ? || '#%'", args) <= 0) {
+					insertValues.put(ItemsTable.COLUMN_NAME, items[i] + " (new)");
+					db.insert(ItemsTable.TABLE, null, insertValues);
+				}
 	    	}
 	    }
 	    db.setTransactionSuccessful();

@@ -14,11 +14,12 @@ import fake.domain.adamlopresto.goshop.tables.StoresTable;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "GoShop";
-	private static final int CURRENT_VERSION = 2;
+	private static final int CURRENT_VERSION = 3;
 	/*
 	 * Version history:
 	 * 1: initial release
 	 * 2: reset quantity to null if 1 and units = 'each'
+	 * 3: add voice names to items
 	 */
 	
 	public DatabaseHelper(Context context) {

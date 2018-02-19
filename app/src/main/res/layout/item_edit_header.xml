@@ -70,4 +70,14 @@
         android:layout_gravity="fill_horizontal"
         />
 
+
+    <TextView android:text="@string/voice_names" />
+
+    <EditText
+        android:id="@+id/item_detail_voice_names"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:inputType="textMultiLine" />
+
 </GridLayout>

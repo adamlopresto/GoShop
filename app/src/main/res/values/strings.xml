@@ -63,5 +63,6 @@
     <string name="rename_store">Rename this store</string>
     <string name="rename">Rename</string>
     <string name="everything_else">OTHER STORES</string>
+    <string name="voice_names">Voice names</string>
 
 </resources>
