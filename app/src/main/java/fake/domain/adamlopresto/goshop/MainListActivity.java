@@ -278,6 +278,8 @@ public class MainListActivity extends ListActivity
 			query = intent.getStringExtra(SearchManager.QUERY);
 			if (query != null)
 				query = query.trim();
+		} else if (Intent.ACTION_SEND.equals(intent.getAction())) {
+			GoShopBroadcastReceiver.addItems(this, intent.getStringExtra(Intent.EXTRA_TEXT));
 		} else {
 			query = null;
 		}
