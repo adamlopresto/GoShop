@@ -11,7 +11,7 @@ import android.widget.Toast;
 import fake.domain.adamlopresto.goshop.contentprovider.GoShopContentProvider;
 import fake.domain.adamlopresto.goshop.tables.ItemsTable;
 
-public class SMSReceiver extends BroadcastReceiver {
+public class GoShopBroadcastReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

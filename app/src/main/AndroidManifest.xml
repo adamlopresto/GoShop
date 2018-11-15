@@ -75,7 +75,7 @@
                 android:value="fake.domain.adamlopresto.goshop.StoreAisleSelection" />
         </activity>
 
-        <receiver android:name=".SMSReceiver" >
+        <receiver android:name=".GoShopBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
