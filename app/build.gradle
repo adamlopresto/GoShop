@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
     defaultConfig {
         applicationId "fake.domain.adamlopresto.goshop"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 28
     }
     buildTypes {
         release {
