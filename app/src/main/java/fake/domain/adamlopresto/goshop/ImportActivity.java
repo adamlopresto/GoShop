@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.NavUtils;
+import androidx.core.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
