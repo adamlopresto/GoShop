@@ -40,7 +40,6 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 	private EditText mPrice;
 	private EditText mCategory;
 	private EditText mVoiceNames;
-	private Button addAisle;
 
 	private long listId;
 
@@ -65,24 +64,23 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 		View footer = View.inflate(this, R.layout.item_edit_footer, null);
 		getListView().addFooterView(footer, null, false);
 	
-		mNeed      = (RadioButton) header.findViewById(R.id.item_detail_need);
-		mPurchased = (RadioButton) header.findViewById(R.id.item_detail_purchased);
-		mHave      = (RadioButton) header.findViewById(R.id.item_detail_have);
-		mName      = (EditText)    header.findViewById(R.id.item_detail_name);
-		mQuantity  = (EditText)    header.findViewById(R.id.item_detail_quantity);
-		mUnits     = (EditText)    header.findViewById(R.id.item_detail_units);
-		mNotes     = (EditText)    header.findViewById(R.id.item_detail_notes);
-		mPrice     = (EditText)    header.findViewById(R.id.item_detail_price);
-		mCategory  = (EditText)    header.findViewById(R.id.item_detail_category);
-		mVoiceNames= (EditText)    header.findViewById(R.id.item_detail_voice_names);
+		mNeed      = header.findViewById(R.id.item_detail_need);
+		mPurchased = header.findViewById(R.id.item_detail_purchased);
+		mHave      = header.findViewById(R.id.item_detail_have);
+		mName      = header.findViewById(R.id.item_detail_name);
+		mQuantity  = header.findViewById(R.id.item_detail_quantity);
+		mUnits     = header.findViewById(R.id.item_detail_units);
+		mNotes     = header.findViewById(R.id.item_detail_notes);
+		mPrice     = header.findViewById(R.id.item_detail_price);
+		mCategory  = header.findViewById(R.id.item_detail_category);
+		mVoiceNames= header.findViewById(R.id.item_detail_voice_names);
 
-		addAisle   = (Button)      footer.findViewById(R.id.add_aisle);
+		Button addAisle = footer.findViewById(R.id.add_aisle);
 		
 		addAisle.setOnClickListener(new OnClickListener(){
 
 			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
+			public void onClick(View ignored) {
 				addAisle();
 			}
 		});
@@ -317,9 +315,8 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 		}
 		String id = uri.getLastPathSegment();
 		String[] projection = new String[] {ItemAisleDetailView.COLUMN_ID, ItemAisleDetailView.COLUMN_STORE_NAME, ItemAisleDetailView.COLUMN_AISLE_NAME};
-		CursorLoader cursorLoader = new CursorLoader(this, GoShopContentProvider.ITEM_AISLE_URI, 
+		return new CursorLoader(this, GoShopContentProvider.ITEM_AISLE_URI,
 				projection, ItemAisleDetailView.COLUMN_ITEM+"=?", new String[]{id}, null);
-		return cursorLoader;
 	}
 
 	@Override
