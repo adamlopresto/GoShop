@@ -182,8 +182,10 @@ public class ItemDetailActivity extends ListActivity implements LoaderManager.Lo
 					.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_PRICE)));
 			mCategory.setText(cursor.getString(cursor
 					.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_CATEGORY)));
-			mVoiceNames.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_VOICE_NAMES)).replace('#', '\n'));
+            String voiceName = cursor.getString(cursor.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_VOICE_NAMES));
+            if (voiceName != null) {
+                mVoiceNames.setText(voiceName.replace('#', '\n'));
+            }
 			listId = cursor.getInt(cursor.getColumnIndexOrThrow(ItemAisleDetailView.COLUMN_LIST));
 
 			// Always close the cursor
