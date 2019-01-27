@@ -54,7 +54,7 @@ public class GoShopBroadcastReceiver extends BroadcastReceiver {
 
 		db.beginTransaction();
 		for (String item : items) {
-		    if ("GoShop:\n".equals(item))
+		    if ("GoShop:".equals(item))
 		    	continue;
 			args[0] = item;
 			if (db.update(ItemsTable.TABLE, cv, ItemsTable.COLUMN_NAME + "= ?", args) <= 0) {
