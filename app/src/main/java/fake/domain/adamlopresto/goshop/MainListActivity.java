@@ -20,7 +20,6 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
@@ -36,6 +35,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -50,6 +50,8 @@ public class MainListActivity extends ListActivity
 		SharedPreferences.OnSharedPreferenceChangeListener,
 		SearchView.OnQueryTextListener, OnActionExpandListener, OnNavigationListener
 {
+
+	public static final int MAX_SMS_LENGTH = 160;
 
 	private AbsListView.MultiChoiceModeListener mActionModeCallback = new AbsListView.MultiChoiceModeListener() {
 		private MenuItem editItem;
@@ -72,7 +74,7 @@ public class MainListActivity extends ListActivity
                     break;
             }
 		}
-			
+
 	    // Called when the action mode is created; startActionMode() was called
 	    @Override
 	    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -118,14 +120,21 @@ public class MainListActivity extends ListActivity
 	            	ListView lv = getListView();
 	            	SparseBooleanArray checked = lv.getCheckedItemPositions();
 	            	Cursor c = adapter.getCursor();
-	            	StringBuffer sb = new StringBuffer("GoShop:");
+	            	StringBuilder sb = new StringBuilder(MAX_SMS_LENGTH);
+	            	sb.append("GoShop:");
 	            	for (int i = 0 ; i < checked.size() ; i++){
 	            		int pos = checked.keyAt(i);
 	            		c.moveToPosition(pos);
-	            		sb.append('\n');
-	            		sb.append(c.getString(c.getColumnIndex("item_name")));
+	            		String str = c.getString(c.getColumnIndex("item_name"));
+	            		if (sb.length() + str.length() + 1> MAX_SMS_LENGTH){
+							sendSMS(sb.toString());
+	            			sb.setLength("GoShop:".length());
+						}
+						sb.append('\n');
+						sb.append(str);
 	            	}
 	            	sendSMS(sb.toString());
+					Toast.makeText(getBaseContext(), "Sending message", Toast.LENGTH_LONG).show();
 	            	return true;
 	            }
 	            case R.id.delete:{
@@ -341,8 +350,29 @@ public class MainListActivity extends ListActivity
 			case R.id.menu_send:
 			{
 
-				String body = getSendableString();
-				sendSMS(body);
+				StringBuilder sb = new StringBuilder(MAX_SMS_LENGTH);
+				sb.append("GoShop:");
+				Cursor c = adapter.getCursor();
+				int pos = c.getPosition();
+				int col = c.getColumnIndexOrThrow(ItemsTable.COLUMN_NAME);
+				int stat = c.getColumnIndexOrThrow(ItemsTable.COLUMN_STATUS);
+				c.moveToFirst();
+				while (!c.isAfterLast()){
+					if ("N".equals(c.getString(stat))){
+					    String str =  c.getString(col);
+					    if (sb.length() +  str.length() + 1 > MAX_SMS_LENGTH){
+							sendSMS(sb.toString());
+							sb.setLength("GoShop:".length());
+						}
+						sb.append("\n");
+						sb.append(c.getString(col));
+					}
+					c.moveToNext();
+				}
+				c.moveToPosition(pos);
+
+				sendSMS(sb.toString());
+				Toast.makeText(getBaseContext(), "Sending message", Toast.LENGTH_LONG).show();
 
 				return true;
 
@@ -368,26 +398,6 @@ public class MainListActivity extends ListActivity
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@NonNull
-	private String getSendableString() {
-		StringBuilder sb = new StringBuilder("GoShop:");
-		Cursor c = adapter.getCursor();
-		int pos = c.getPosition();
-		int col = c.getColumnIndexOrThrow(ItemsTable.COLUMN_NAME);
-		int stat = c.getColumnIndexOrThrow(ItemsTable.COLUMN_STATUS);
-		c.moveToFirst();
-		while (!c.isAfterLast()){
-            if ("N".equals(c.getString(stat))){
-                sb.append("\n");
-                sb.append(c.getString(col));
-            }
-            c.moveToNext();
-        }
-		c.moveToPosition(pos);
-
-		return sb.toString();
 	}
 
 	@SuppressLint("DefaultLocale")
